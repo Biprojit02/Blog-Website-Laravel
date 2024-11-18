@@ -68,7 +68,7 @@
             background-color: #333;
             color: #fff;
             position: relative;
-            bottom: 0;
+            bottom: -150px;
             width: 100%;
             font-size: 14px;
         }
