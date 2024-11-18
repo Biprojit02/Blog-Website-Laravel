@@ -31,6 +31,35 @@ class PostController extends Controller
     }
 
     /**
+     * Store a newly created post in storage.
+     */
+    public function store(Request $request)
+    {
+        // Validate request data
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle image upload
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+        }
+
+        // Create the post
+        Post::create([
+            'title' => $validatedData['title'],
+            'content' => $validatedData['content'],
+            'image' => $imagePath,
+            'user_id' => Auth::id(), // Associate the post with the logged-in user
+        ]);
+
+        return redirect()->route('posts.index')->with('success', 'Post created successfully!');
+    }
+
+    /**
      * Show the form for editing the specified post.
      */
     public function edit(Post $post)
@@ -48,7 +77,7 @@ class PostController extends Controller
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Handle the image upload if a new image is provided
